@@ -37,7 +37,6 @@ public class AppUserDetails implements UserDetails {
                 return user.getUsername();
             }
         };
-
         return Arrays.asList(authorty);
     }
 

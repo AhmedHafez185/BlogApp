@@ -6,6 +6,7 @@
 package com.ahmed.jwt.app;
 
 import com.ahmed.jwt.app.security.AppUserService;
+import com.ahmed.jwt.app.security.jwt.AuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  *
@@ -23,31 +23,35 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String[] PUBLIC_ENDPOINTS = {"api/auth"};
+    private final String[] PUBLIC_ENDPOINTS = {
+        "/api/auth/**"
+    };
     @Autowired
     private AppUserService appUserService;
 
-    @Bean
+    @Bean()
     @Override
-    protected  AuthenticationManager authenticationManager()throws Exception{
-        return super.authenticationManager();
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
+
+    @Bean
+    AuthFilter authFilter() {
+        return new AuthFilter();
+    }
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http
+        http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers(PUBLIC_ENDPOINTS).permitAll()
+                .antMatchers("/api/auth/**")
+                .permitAll()
+                .antMatchers("/api/posts/all")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .logout().logoutUrl("/logout")
-                .and()
-                .httpBasic()
-                .and()
-                .csrf()
-                .disable()
-                .userDetailsService(appUserService);
-        http.headers().frameOptions().disable();
-
+                .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
     }
+
 }

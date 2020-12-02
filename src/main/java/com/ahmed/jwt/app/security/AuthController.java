@@ -7,6 +7,7 @@ package com.ahmed.jwt.app.security;
 
 import com.ahmed.jwt.app.dto.UserDto;
 import com.ahmed.jwt.app.security.jwt.JWTResponse;
+import com.ahmed.jwt.app.security.jwt.SignRequest;
 import com.ahmed.jwt.app.security.jwt.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Ahmed Hafez
  */
 @RestController
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
@@ -36,12 +37,13 @@ public class AuthController {
     AuthenticationManager authenticationManager;
 
     @PostMapping(value = {"","/"})
-    public JWTResponse signIn(@RequestBody UserDto user) {
+    public JWTResponse signIn(@RequestBody SignRequest signRequest) {
         final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+                new UsernamePasswordAuthenticationToken(signRequest.getUsername(), signRequest.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
+        System.out.println(signRequest.getUsername());
+        UserDetails userDetails = userService.loadUserByUsername(signRequest.getUsername());
         String token = tokenUtils.generateToken(userDetails);
         JWTResponse response = new JWTResponse(token);
         return response;

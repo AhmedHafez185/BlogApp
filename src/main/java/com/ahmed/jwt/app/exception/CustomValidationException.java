@@ -7,21 +7,16 @@ package com.ahmed.jwt.app.exception;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.binding.Binding;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.context.request.WebRequest;
 
 /**
  *
  * @author Ahmed Hafez
  */
-public class CustomValidationException extends RuntimeException{
+public class CustomValidationException extends RuntimeException {
 
     private Errors errors;
 
@@ -32,6 +27,7 @@ public class CustomValidationException extends RuntimeException{
     public HttpStatus getStatusCode() {
         return HttpStatus.BAD_REQUEST;
     }
+
     public List<ObjectError> handleValidation() {
         List<FieldError> fieldErrors = this.errors.getFieldErrors();
         List<ObjectError> objErrors = new ArrayList<>();
@@ -41,5 +37,5 @@ public class CustomValidationException extends RuntimeException{
         }
         return objErrors;
     }
-    
+
 }

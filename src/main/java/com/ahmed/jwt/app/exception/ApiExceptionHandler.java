@@ -10,6 +10,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -48,6 +49,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         validErrors.setErrors(ex.handleValidation());
         validErrors.setUri(request.getDescription(false));
         return new ResponseEntity<>(validErrors, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = {UsernameNotFoundException.class})
+    public ResponseEntity<ErrorDetails> handleUsernameNotFoundException(UsernameNotFoundException ex, WebRequest request) {
+        ErrorDetails details = new ErrorDetails("Username not exists", request.getDescription(false));
+        return new ResponseEntity<>(details, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception ex, WebRequest request) {

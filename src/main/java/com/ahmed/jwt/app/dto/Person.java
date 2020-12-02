@@ -10,6 +10,7 @@ import com.ahmed.jwt.app.validation.group.Group2;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Min.List;
 import javax.validation.constraints.NotNull;
+import org.springframework.util.Assert;
 
 /**
  *
